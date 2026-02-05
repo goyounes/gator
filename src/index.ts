@@ -3,19 +3,23 @@ import { handlerLogin } from "./commands/users";
 // import { Config, readConfig, setUser } from "./config";
 
 function main() {
-    console.log("Hello, world!");
+    if (process.argv.length <= 2) {
+        throw new Error("Not enough arguments were provided")
+    }
+
     const commandsRegistry: CommandsRegistry = {}
     registerCommand(commandsRegistry, "login", handlerLogin);
-    console.log(commandsRegistry)
+
+    const [cmdName, ...cmdArgs] = process.argv.slice(2)
 
     try {
-        if (process.argv.length === 2) {
-            throw new Error("Not enough arguments were provided")
-        }
-        const [ , ,cmdName, ...args] = process.argv 
-        runCommand(commandsRegistry,cmdName,...args)
+        runCommand(commandsRegistry, cmdName, ...cmdArgs)
     } catch (err) {
-        console.log((err as Error).message)
+        if (err instanceof Error) {
+            console.error(`Error running command ${cmdName}: ${err.message}`);
+        } else {
+            console.error(`Error running command ${cmdName}: ${err}`);
+        }
         process.exit(1)
     }
 }
