@@ -1,4 +1,5 @@
-import { CommandsRegistry, handlerLogin, registerCommand, runCommand } from "./commands/commands";
+import { CommandsRegistry, registerCommand, runCommand } from "./commands/commands";
+import { handlerLogin } from "./commands/users";
 // import { Config, readConfig, setUser } from "./config";
 
 function main() {
