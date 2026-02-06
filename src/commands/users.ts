@@ -1,5 +1,5 @@
 import { readConfig, setUser } from "src/config"
-import { createUser, getUserByName } from "src/lib/db/queries/users"
+import { createUser, getUserByName, deleteUsers} from "src/lib/db/queries/users"
 
 export async function handlerLogin(cmdName:string, ...args:string[]): Promise<void>{
     if (args.length !== 1 ) {
@@ -26,5 +26,14 @@ export async function handlerRegister(cmdName:string, ...args:string[]): Promise
         setUser(username)
     } catch (err) {
         throw new Error(`Failed to create user ${username}`);
+    }
+}
+
+export async function handlerReset(cmdName:string, ...args:string[]): Promise<void>{
+    try {
+        await deleteUsers()
+        console.log("deleted all users")
+    } catch (err) {
+        throw new Error(`Failed to delete users`);
     }
 }
