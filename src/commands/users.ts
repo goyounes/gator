@@ -1,6 +1,6 @@
 import { readConfig, setUser } from "src/config"
 
-export function handlerLogin(cmdName:string, ...args:string[]):void{
+export async function handlerLogin(cmdName:string, ...args:string[]): Promise<void>{
     if (args.length !== 1 ) {
         throw new Error ("login function expects <username>")
     }

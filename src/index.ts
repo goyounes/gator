@@ -2,7 +2,7 @@ import { CommandsRegistry, registerCommand, runCommand } from "./commands/comman
 import { handlerLogin } from "./commands/users";
 // import { Config, readConfig, setUser } from "./config";
 
-function main() {
+async function main() {
     if (process.argv.length <= 2) {
         throw new Error("Not enough arguments were provided")
     }
@@ -13,7 +13,7 @@ function main() {
     const [cmdName, ...cmdArgs] = process.argv.slice(2)
 
     try {
-        runCommand(commandsRegistry, cmdName, ...cmdArgs)
+        await runCommand(commandsRegistry, cmdName, ...cmdArgs)
     } catch (err) {
         if (err instanceof Error) {
             console.error(`Error running command ${cmdName}: ${err.message}`);
@@ -22,6 +22,7 @@ function main() {
         }
         process.exit(1)
     }
+    process.exit(0)
 }
 
-main();
+await main();
