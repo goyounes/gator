@@ -1,5 +1,5 @@
 import { readConfig, setUser } from "src/config"
-import { createUser, getUserByName, deleteUsers} from "src/lib/db/queries/users"
+import { createUser, getUserByName, deleteUsers, getAllUsers} from "src/lib/db/queries/users"
 
 export async function handlerLogin(cmdName:string, ...args:string[]): Promise<void>{
     if (args.length !== 1 ) {
@@ -35,5 +35,16 @@ export async function handlerReset(cmdName:string, ...args:string[]): Promise<vo
         console.log("deleted all users")
     } catch (err) {
         throw new Error(`Failed to delete users`);
+    }
+}
+
+export async function handlerUsers(cmdName:string, ...args:string[]): Promise<void>{
+    try {
+        const users = await getAllUsers()
+        for (const user of users) {
+            console.log(`* ${user.name} ${user.name === readConfig().currentUserName ? "(current)" : ""}`)
+        }
+    } catch (err) {
+        throw new Error(`Failed to list users`);
     }
 }
