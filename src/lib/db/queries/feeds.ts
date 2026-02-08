@@ -10,7 +10,14 @@ export async function createFeed(name: string, url : string, userId: string) : P
 export async function getFeedById(id: string): Promise <Feed> {
     const [result] = await db.select().from(feeds).where(eq(feeds.id, id));
     if (!result) {
-        throw new Error(`Feed not found: ${id}`);
+        throw new Error(`Feed not found id: ${id}`);
+    }
+    return result;
+}
+export async function getFeedByUrl(url: string): Promise <Feed> {
+    const [result] = await db.select().from(feeds).where(eq(feeds.url, url));
+    if (!result) {
+        throw new Error(`Feed not found url: ${url}`);
     }
     return result;
 }
