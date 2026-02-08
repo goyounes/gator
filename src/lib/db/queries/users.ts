@@ -9,6 +9,9 @@ export async function createUser(name: string): Promise<User> {
 
 export async function getUserByName(name: string): Promise<User>{
   const [result] = await db.select().from(users).where(eq(users.name, name));
+  if (!result) {
+    throw new Error(`User not found: ${name}`);
+  }
   return result;
 }
 
