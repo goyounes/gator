@@ -2,9 +2,9 @@
   "name": "gator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "start": "tsx ./src/index.ts",
+    "start": "tsx ./src/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
