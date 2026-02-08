@@ -14,13 +14,22 @@ export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
     const xmlText = await response.text();
     const xmlParser = new XMLParser();
     const parsedXML = xmlParser.parse(xmlText) as RSSFeed;
-    const feed = validateRSSFeed(parsedXML);
 
-    const {title, link, description} = feed.channel;
+    const feed = validateRSSFeed(parsedXML);
+    const {title, link, description, item} = feed.channel;
+    const validItems = filterValidItems(item);
+
     console.log(`Fetched RSS feed: ${title} (${link}) - ${description}`);
-    const items = feed.channel.item;
-    console.log(`Found ${items.length} items in the feed.`);
-    return feed;
+    console.log(`Found ${validItems.length} items in the feed.`);
+
+    return {
+        channel: {
+            title,
+            link,
+            description,
+            item: validItems
+        }
+    };
 }
 
 function validateRSSFeed(feed: unknown): RSSFeed {
@@ -35,18 +44,23 @@ function validateRSSFeed(feed: unknown): RSSFeed {
     }
 
     const c = f.channel as Record<string, unknown>;
+    let errorMessage = '';
 
     if (!c.description || typeof c.description !== 'string') {
-        throw new Error('Invalid RSS feed format: Missing or invalid description element');
+        errorMessage += '- Missing or invalid description element\n';
     }
     if (!c.title || typeof c.title !== 'string') {
-        throw new Error('Invalid RSS feed format: Missing or invalid title element');
+        errorMessage += '- Missing or invalid title element\n';
     }
     if (!c.link || typeof c.link !== 'string') {
-        throw new Error('Invalid RSS feed format: Missing or invalid link element');
+        errorMessage += '- Missing or invalid link element\n';
     }
     if (!c.item || !Array.isArray(c.item)) {
-        throw new Error('Invalid RSS feed format: Missing or invalid item element');
+        errorMessage += '- Missing or invalid item element\n';
+    }
+
+    if (errorMessage !== '') {
+        throw new Error('Invalid RSS feed format:\n' + errorMessage.trim());
     }
 
     return feed as RSSFeed;
@@ -60,24 +74,30 @@ function filterValidItems(items: unknown[]): RSSItem[] {
             throw new Error(`Invalid RSS feed format: Item at index ${index} is not an object`);
         }
         const i = item as Record<string, unknown>;
+        let errorMessage = '';
 
         if (!i.title || typeof i.title !== 'string') {
-            throw new Error(`Invalid RSS feed format: Missing or invalid title element in item at index ${index}`);
+            errorMessage += '- Missing or invalid title element\n';
         }
         if (!i.link || typeof i.link !== 'string') {
-            throw new Error(`Invalid RSS feed format: Missing or invalid link element in item at index ${index}`);
+            errorMessage += '- Missing or invalid link element\n';
         }
         if (!i.description || typeof i.description !== 'string') {
-            throw new Error(`Invalid RSS feed format: Missing or invalid description element in item at index ${index}`);
+            errorMessage += '- Missing or invalid description element\n';
         }
         if (!i.pubDate || typeof i.pubDate !== 'string') {
-            throw new Error(`Invalid RSS feed format: Missing or invalid pubDate element in item at index ${index}`);
+            errorMessage += '- Missing or invalid pubDate element\n';
         }
+
+        if (errorMessage !== '') {
+            throw new Error(`Invalid RSS feed format for item at index ${index}:\n${errorMessage.trim()}`);
+        }
+
         validItems.push({
-            title: i.title,
-            link: i.link,
-            description: i.description,
-            pubDate: i.pubDate
+            title: i.title as string,
+            link: i.link as string,
+            description: i.description as string,
+            pubDate: i.pubDate as string
         });
     });
     return validItems;
