@@ -1,4 +1,5 @@
 import {XMLParser} from 'fast-xml-parser';
+import util from "util";
 
 export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
     const response = await fetch(feedURL,{
@@ -38,6 +39,14 @@ export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
             item: validItems
         }
     };
+}
+
+export function printRSSFeed(feed: RSSFeed,maxStringLength: number = 0): void {
+    console.log(util.inspect(feed, { 
+        depth: null, 
+        colors: true, 
+        maxStringLength: maxStringLength || null
+    }));
 }
 
 function validateRSSFeed(feed: unknown): RSSFeed {
