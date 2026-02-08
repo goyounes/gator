@@ -1,7 +1,7 @@
 import { Config, readConfig } from "src/config";
 import { getUserByName } from "src/lib/db/queries/users";
 import { Feed, User } from "src/lib/db/schema";
-import { createFeed, getFeedById } from "src/lib/db/queries/feeds";
+import { createFeed, getAllFeeds, getFeedById } from "src/lib/db/queries/feeds";
 import { fetchRSSFeed, printRSSFeed, RSSFeed } from "src/lib/rss";
 
 
@@ -20,16 +20,17 @@ export async function handlerAgg(cmdName:string, ...args:string[]): Promise<void
 }
 
 export async function handlerAddFeed(cmdName:string, ...args:string[]): Promise<void>{
-    const cfg: Config = readConfig() 
-    const currentUser: User = await getUserByName(cfg.currentUserName)
-    console.log(currentUser)
     if (args.length !== 2 ) {
         throw new Error ("addfeed function expects <name> <url>")
     }
     const [name, url] = args
+
+    const cfg: Config = readConfig() 
+    const currentUser: User = await getUserByName(cfg.currentUserName)
+
     try {        
         const {insertedId} = await createFeed(name, url, currentUser.id)
-        console.log(`Successfully added RSS feed ${name} from ${url}`)
+        console.log(`Successfully added RSS feed ${name} with URL ${url}`)
 
         const feed : Feed = await getFeedById(insertedId)
         printFeed(feed, currentUser)
@@ -38,7 +39,20 @@ export async function handlerAddFeed(cmdName:string, ...args:string[]): Promise<
     }
 }
 
+export async function handlerFeeds(cmdName:string, ...args:string[]): Promise<void>{
+    try {
+        const items  = await getAllFeeds()
+        console.log("All RSS feeds:")
+        items.forEach(item => {        
+            printFeed(item.feeds, item.users!)
+        })
+    } catch (err) {
+        throw new Error(`Failed to list RSS feeds: ${(err instanceof Error) ? err.message : err}`);
+    }
+
+}
+
 function printFeed(feed: Feed, user: User): void {
-    console.log(`Feed: ${feed.name} (${feed.url}) - User: ${user.name}`)
+    console.log(`${feed.name}: ${feed.url} - User: ${user.name}`)
 }
 
