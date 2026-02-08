@@ -5,7 +5,8 @@ export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
         method: 'GET',
         headers: {
             'Content-Type': 'application/xml',
-            'User-Agent': 'gator'
+            'User-Agent': 'gator',
+            accept: 'application/rss+xml'
         }
     });
     if (!response.ok) {
@@ -13,9 +14,16 @@ export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
     }
     const xmlText = await response.text();
     const xmlParser = new XMLParser();
-    const parsedXML = xmlParser.parse(xmlText) as RSSFeed;
 
-    const feed = validateRSSFeed(parsedXML);
+    const parsedXML = xmlParser.parse(xmlText);
+    if (!parsedXML) {
+        throw new Error("Failed to parse RSS feed XML");
+    }
+    if (typeof parsedXML !== 'object' || !parsedXML.rss) {
+        throw new Error("Failed to parse RSS feed XML: Invalid structure");
+    }
+
+    const feed = validateRSSFeed(parsedXML.rss);
     const {title, link, description, item} = feed.channel;
     const validItems = filterValidItems(item);
 
@@ -33,6 +41,7 @@ export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
 }
 
 function validateRSSFeed(feed: unknown): RSSFeed {
+
     if (feed === null || typeof feed !== 'object' ) {
         throw new Error('Invalid RSS feed format: Feed is not an object');
     }
