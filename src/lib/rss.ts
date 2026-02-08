@@ -21,7 +21,7 @@ export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
         throw new Error("Failed to parse RSS feed XML");
     }
     if (typeof parsedXML !== 'object' || !parsedXML.rss) {
-        throw new Error("Failed to parse RSS feed XML: Invalid structure");
+        throw new Error("Failed to parse RSS feed");
     }
 
     const feed = validateRSSFeed(parsedXML.rss);
@@ -38,7 +38,7 @@ export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
             description,
             item: validItems
         }
-    };
+    } as RSSFeed;
 }
 
 export function printRSSFeed(feed: RSSFeed,maxStringLength: number = 0): void {
