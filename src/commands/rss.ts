@@ -41,3 +41,4 @@ export async function handlerAddFeed(cmdName:string, ...args:string[]): Promise<
 function printFeed(feed: Feed, user: User): void {
     console.log(`Feed: ${feed.name} (${feed.url}) - User: ${user.name}`)
 }
+

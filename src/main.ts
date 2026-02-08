@@ -1,6 +1,6 @@
 import { CommandsRegistry, registerCommand, runCommand } from "./commands/commands";
 import { handlerLogin, handlerRegister, handlerReset, handlerUsers } from "./commands/users";
-import { handlerAgg, handlerAddFeed} from "./commands/aggregate";
+import { handlerAgg, handlerAddFeed} from "./commands/rss";
 
 async function main() {
     if (process.argv.length <= 2) {
