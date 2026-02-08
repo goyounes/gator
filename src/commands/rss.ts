@@ -29,10 +29,9 @@ export async function handlerAddFeed(cmdName:string, ...args:string[]): Promise<
     const currentUser: User = await getUserByName(cfg.currentUserName)
 
     try {        
-        const {insertedId} = await createFeed(name, url, currentUser.id)
+        const feed: Feed = await createFeed(name, url, currentUser.id)
         console.log(`Successfully added RSS feed ${name} with URL ${url}`)
-
-        const feed : Feed = await getFeedById(insertedId)
+        
         printFeed(feed, currentUser)
     } catch (err) {
         throw new Error(`Failed to add RSS feed ${name} from ${url}: ${(err instanceof Error) ? err.message : err}`);
