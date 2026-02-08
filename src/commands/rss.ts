@@ -39,19 +39,32 @@ export async function handlerAddFeed(cmdName:string, ...args:string[]): Promise<
 }
 
 export async function handlerFeeds(cmdName:string, ...args:string[]): Promise<void>{
+    let items
     try {
-        const items  = await getAllFeeds()
-        console.log("All RSS feeds:")
-        items.forEach(item => {        
-            printFeed(item.feeds, item.users!)
-        })
+        items  = await getAllFeeds()
     } catch (err) {
         throw new Error(`Failed to list RSS feeds: ${(err instanceof Error) ? err.message : err}`);
     }
 
+    if (items.length === 0) {
+        console.log(`No feeds found.`);
+        return;
+    }
+
+    console.log(`found feeds: ${items.length}`)
+    items.forEach((item , index) => {        
+        index !== 0 && console.log(`=====================================`);
+        printFeed(item.feeds, item.users!)
+    })
+
 }
 
 function printFeed(feed: Feed, user: User): void {
-    console.log(`${feed.name}: ${feed.url} - User: ${user.name}`)
+    console.log(`* ID:            ${feed.id}`);
+    console.log(`* Created:       ${feed.createdAt}`);
+    console.log(`* Updated:       ${feed.updatedAt}`);
+    console.log(`* name:          ${feed.name}`);
+    console.log(`* URL:           ${feed.url}`);
+    console.log(`* User:          ${user.name}`);
 }
 
