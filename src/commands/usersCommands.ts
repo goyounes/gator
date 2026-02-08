@@ -1,5 +1,5 @@
 import { readConfig, setUser } from "src/config"
-import { createUser, getUserByName, deleteUsers, getAllUsers} from "src/lib/db/queries/users"
+import { createUser, getUserByName, deleteUsers, getAllUsers} from "src/lib/db/queries/usersQueries"
 
 export async function handlerLogin(cmdName:string, ...args:string[]): Promise<void>{
     if (args.length !== 1 ) {

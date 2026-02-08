@@ -1,9 +1,9 @@
 import { Config, readConfig } from "src/config";
-import { getUserByName } from "src/lib/db/queries/users";
+import { getUserByName } from "src/lib/db/queries/usersQueries";
 import { Feed, User } from "src/lib/db/schema";
-import { createFeed, getAllFeeds } from "src/lib/db/queries/feeds";
-import { fetchRSSFeed, printRSSFeed, RSSFeed } from "src/lib/rss";
-import { createFeedFollow } from "src/lib/db/queries/feedFollows";
+import { createFeed, getAllFeeds } from "src/lib/db/queries/feedsQueries";
+import { fetchRSSFeed, printRSSFeed, RSSFeed } from "src/lib/rssService";
+import { createFeedFollow } from "src/lib/db/queries/feedFollowsQueries";
 
 
 export async function handlerAgg(cmdName:string, ...args:string[]): Promise<void>{

@@ -1,8 +1,8 @@
 import { Config, readConfig } from "src/config";
-import { getUserByName } from "src/lib/db/queries/users";
+import { getUserByName } from "src/lib/db/queries/usersQueries";
 import { Feed, User } from "src/lib/db/schema";
-import { getFeedByUrl } from "src/lib/db/queries/feeds";
-import { createFeedFollow, getFeedFollowsForUser } from "src/lib/db/queries/feedFollows";
+import { getFeedByUrl } from "src/lib/db/queries/feedsQueries";
+import { createFeedFollow, getFeedFollowsForUser } from "src/lib/db/queries/feedFollowsQueries";
 
 export async function handlerFollow(cmdName:string, ...args:string[]): Promise<void>{
     if (args.length !== 1 ) {
