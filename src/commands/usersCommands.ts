@@ -41,8 +41,9 @@ export async function handlerReset(cmdName:string, ...args:string[]): Promise<vo
 export async function handlerUsers(cmdName:string, ...args:string[]): Promise<void>{
     try {
         const users = await getAllUsers()
+        const name = readConfig().currentUserName
         for (const user of users) {
-            console.log(`* ${user.name} ${user.name === readConfig().currentUserName ? "(current)" : ""}`)
+            console.log(`* ${user.name} ${user.name === name ? "(current)" : ""}`)
         }
     } catch (err) {
         throw new Error(`Failed to list users`);

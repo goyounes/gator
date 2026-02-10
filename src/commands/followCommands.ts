@@ -4,7 +4,7 @@ import { createFeedFollow, deleteFeedFollowsForUser, getFeedFollowsForUser } fro
 
 export async function handlerFollow(cmdName:string, user:User, ...args:string[]): Promise<void>{
     if (args.length !== 1 ) {
-        throw new Error ("agg function expects <url>")
+        throw new Error ("follow function expects <url>")
     }
     const url = args[0]
 
@@ -32,7 +32,7 @@ export async function handlerFollowing(cmdName:string, user:User, ...args:string
 
 export async function handlerUnfollow(cmdName:string, user:User, ...args:string[]): Promise<void>{
     if (args.length !== 1 ) {
-        throw new Error ("agg function expects <url>")
+        throw new Error ("unfollow function expects <url>")
     }
     const feedUrl = args[0]
 

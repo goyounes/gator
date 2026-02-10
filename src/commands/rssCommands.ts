@@ -1,5 +1,3 @@
-import { Config, readConfig } from "src/config";
-import { getUserByName } from "src/lib/db/queries/usersQueries";
 import { Feed, User } from "src/lib/db/schema";
 import { createFeed, getAllFeeds } from "src/lib/db/queries/feedsQueries";
 import { fetchRSSFeed, printRSSFeed, RSSFeed } from "src/lib/rssService";
