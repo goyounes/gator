@@ -1,6 +1,6 @@
 import { Feed, User } from "src/lib/db/schema";
 import { getFeedByUrl } from "src/lib/db/queries/feedsQueries";
-import { createFeedFollow, getFeedFollowsForUser } from "src/lib/db/queries/feedFollowsQueries";
+import { createFeedFollow, deleteFeedFollowsForUser, getFeedFollowsForUser } from "src/lib/db/queries/feedFollowsQueries";
 
 export async function handlerFollow(cmdName:string, user:User, ...args:string[]): Promise<void>{
     if (args.length !== 1 ) {
@@ -13,7 +13,7 @@ export async function handlerFollow(cmdName:string, user:User, ...args:string[])
         const newFeedFollow  = await createFeedFollow(feed.id, user.id)
         console.log(`Successfully followed feed: ${newFeedFollow.feedName} for user: ${newFeedFollow.userName}`)
     } catch (err) {
-        throw new Error(`Failed to follow feed url: ${url}: ${(err instanceof Error) ? err.message : err}`);
+        throw new Error(`Failed to follow feed url: ${url}\n ${(err instanceof Error) ? err.message : err}`);
     }
 }
 
@@ -26,6 +26,20 @@ export async function handlerFollowing(cmdName:string, user:User, ...args:string
             console.log(` - ${feedFollow.feedName}`)
         })
     } catch (err) {
-        throw new Error(`Failed to fetch feed for user : ${user.name}: ${(err instanceof Error) ? err.message : err}`);
+        throw new Error(`Failed to fetch feed for user : ${user.name}\n ${(err instanceof Error) ? err.message : err}`);
+    }
+}
+
+export async function handlerUnfollow(cmdName:string, user:User, ...args:string[]): Promise<void>{
+    if (args.length !== 1 ) {
+        throw new Error ("agg function expects <url>")
+    }
+    const feedUrl = args[0]
+
+    try {        
+         await deleteFeedFollowsForUser(user.id, feedUrl)
+        console.log(`Successfully unfollowed feed url: ${feedUrl} for user: ${user.id}`)
+    } catch (err) {
+        throw new Error(`Failed to unfollowed feed url: ${feedUrl} for user: ${user.id} \n ${(err instanceof Error) ? err.message : err}`);
     }
 }

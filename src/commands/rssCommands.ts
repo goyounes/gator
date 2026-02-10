@@ -16,7 +16,7 @@ export async function handlerAgg(cmdName:string, ...args:string[]): Promise<void
         console.log(`Successfully fetched RSS feed from ${url}`)
         printRSSFeed(feed, 100)
     } catch (err) {
-        throw new Error(`Failed to fetch RSS feed from ${url}: ${(err instanceof Error) ? err.message : err}`);
+        throw new Error(`Failed to fetch RSS feed from ${url}\n ${(err instanceof Error) ? err.message : err}`);
     }
 }
 
@@ -33,7 +33,7 @@ export async function handlerAddFeed(cmdName:string, user: User, ...args:string[
         await createFeedFollow(feed.id,user.id)
         console.log(`Successfully followed feed: ${feed.name} for user: ${user.name}`)
     } catch (err) {
-        throw new Error(`Failed to add RSS feed ${name} from ${url}: ${(err instanceof Error) ? err.message : err}`);
+        throw new Error(`Failed to add RSS feed ${name} from ${url}\n ${(err instanceof Error) ? err.message : err}`);
     }
 }
 
@@ -42,7 +42,7 @@ export async function handlerFeeds(cmdName:string, ...args:string[]): Promise<vo
     try {
         items  = await getAllFeeds()
     } catch (err) {
-        throw new Error(`Failed to list RSS feeds: ${(err instanceof Error) ? err.message : err}`);
+        throw new Error(`Failed to list RSS feeds\n ${(err instanceof Error) ? err.message : err}`);
     }
 
     if (items.length === 0) {
