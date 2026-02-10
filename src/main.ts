@@ -2,7 +2,7 @@ import { CommandsRegistry, registerCommand, runCommand } from "./commands/comman
 import { handlerLogin, handlerRegister, handlerReset, handlerUsers } from "./commands/usersCommands";
 import { handlerAgg, handlerAddFeed, handlerFeeds} from "./commands/rssCommands";
 import { handlerFollow, handlerFollowing } from "./commands/followCommands";
-
+import { middlewareLoggedIn } from "./middleware"
 async function main() {
     if (process.argv.length <= 2) {
         throw new Error("Not enough arguments were provided")
@@ -14,7 +14,7 @@ async function main() {
     registerCommand(commandsRegistry, "reset", handlerReset);
     registerCommand(commandsRegistry, "users", handlerUsers);
     registerCommand(commandsRegistry, "agg", handlerAgg);
-    registerCommand(commandsRegistry, "addfeed", handlerAddFeed);
+    registerCommand(commandsRegistry, "addfeed", middlewareLoggedIn(handlerAddFeed));
     registerCommand(commandsRegistry, "feeds", handlerFeeds);
     registerCommand(commandsRegistry, "follow", handlerFollow);
     registerCommand(commandsRegistry, "following", handlerFollowing);

@@ -20,21 +20,18 @@ export async function handlerAgg(cmdName:string, ...args:string[]): Promise<void
     }
 }
 
-export async function handlerAddFeed(cmdName:string, ...args:string[]): Promise<void>{
+export async function handlerAddFeed(cmdName:string, user: User, ...args:string[]): Promise<void>{
     if (args.length !== 2 ) {
         throw new Error ("addfeed function expects <name> <url>")
     }
     const [name, url] = args
 
-    const cfg: Config = readConfig() 
-    const currentUser: User = await getUserByName(cfg.currentUserName)
-
     try {        
-        const feed: Feed = await createFeed(name, url, currentUser.id)
+        const feed: Feed = await createFeed(name, url, user.id)
         console.log(`Successfully added RSS feed ${name} with URL ${url}`)
-        printFeed(feed, currentUser);
-        await createFeedFollow(feed.id,currentUser.id)
-        console.log(`Successfully followed feed: ${feed.name} for user: ${currentUser.name}`)
+        printFeed(feed, user);
+        await createFeedFollow(feed.id,user.id)
+        console.log(`Successfully followed feed: ${feed.name} for user: ${user.name}`)
     } catch (err) {
         throw new Error(`Failed to add RSS feed ${name} from ${url}: ${(err instanceof Error) ? err.message : err}`);
     }
