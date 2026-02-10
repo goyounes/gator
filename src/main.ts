@@ -16,8 +16,8 @@ async function main() {
     registerCommand(commandsRegistry, "agg", handlerAgg);
     registerCommand(commandsRegistry, "addfeed", middlewareLoggedIn(handlerAddFeed));
     registerCommand(commandsRegistry, "feeds", handlerFeeds);
-    registerCommand(commandsRegistry, "follow", handlerFollow);
-    registerCommand(commandsRegistry, "following", handlerFollowing);
+    registerCommand(commandsRegistry, "follow", middlewareLoggedIn(handlerFollow));
+    registerCommand(commandsRegistry, "following", middlewareLoggedIn(handlerFollowing));
 
     const [cmdName, ...cmdArgs] = process.argv.slice(2)
 
