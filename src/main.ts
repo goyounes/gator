@@ -3,6 +3,7 @@ import { handlerLogin, handlerRegister, handlerReset, handlerUsers } from "./com
 import { handlerAgg, handlerAddFeed, handlerFeeds} from "./commands/rssCommands";
 import { handlerFollow, handlerFollowing, handlerUnfollow } from "./commands/followCommands";
 import { middlewareLoggedIn } from "./middleware"
+import { handlerBrowse } from "./commands/browseCommands";
 async function main() {
     if (process.argv.length <= 2) {
         console.log("Not enough arguments were provided")
@@ -20,6 +21,7 @@ async function main() {
     registerCommand(commandsRegistry, "follow", middlewareLoggedIn(handlerFollow));
     registerCommand(commandsRegistry, "following", middlewareLoggedIn(handlerFollowing));
     registerCommand(commandsRegistry, "unfollow", middlewareLoggedIn(handlerUnfollow));
+    registerCommand(commandsRegistry, "browse", middlewareLoggedIn(handlerBrowse));
 
     const [cmdName, ...cmdArgs] = process.argv.slice(2)
 
