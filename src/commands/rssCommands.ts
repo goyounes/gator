@@ -62,12 +62,12 @@ export async function handlerAddFeed(cmdName:string, user: User, ...args:string[
 
     try {        
         const feed: Feed = await createFeed(name, url, user.id)
-        console.log(`Successfully added RSS feed ${name} with URL ${url}`)
+        console.log(`Successfully added RSS feed "${name}" with URL "${url}"`)
         printFeed(feed, user);
         await createFeedFollow(feed.id,user.id)
-        console.log(`Successfully followed feed: ${feed.name} for user: ${user.name}`)
+        console.log(`Successfully followed feed: "${feed.name}" for user: "${user.name}"`)
     } catch (err) {
-        throw new Error(`Failed to add RSS feed ${name} from ${url}\n ${(err instanceof Error) ? err.message : err}`);
+        throw new Error(`Failed to add RSS feed "${name}" from "${url}"\n ${(err instanceof Error) ? err.message : err}`);
     }
 }
 

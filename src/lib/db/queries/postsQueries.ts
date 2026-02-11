@@ -2,7 +2,7 @@ import { RSSItem } from "src/lib/rssService";
 import { feeds, Post, posts, User } from "../schema";
 import { db } from "..";
 import { getFeedFollowsForUser } from "./feedFollowsQueries";
-import { eq, getTableColumns, inArray } from "drizzle-orm";
+import { desc, eq, getTableColumns, inArray } from "drizzle-orm";
 
 
 
@@ -26,7 +26,7 @@ export async function createPost(post: RSSItem, feedId: string) {
     }
 }
 
-export async function getPostsForUser(user: User, limit: number = 2): Promise<Post[]>{
+export async function getPostsForUser(user: User, limit: number): Promise<Post[]>{
     const feedFollows = await getFeedFollowsForUser(user.id)
     const feedIds = feedFollows.map(f => f.feedId)
     const userPosts = await db
@@ -34,6 +34,7 @@ export async function getPostsForUser(user: User, limit: number = 2): Promise<Po
         .from(posts)
         .innerJoin(feeds, eq(feeds.id, posts.feedId))
         .where(inArray(feeds.id,feedIds))
+        .orderBy(desc(posts.publishedAt))
         .limit(limit);
 
     return userPosts
