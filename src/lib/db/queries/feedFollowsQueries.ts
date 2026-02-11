@@ -1,16 +1,11 @@
 import { db } from "..";
 import { Feed, feedFollows, feeds, users } from "../schema";
-import { eq, and } from 'drizzle-orm';
-import { getFeedByUrl } from "./feedsQueries";
+import { eq, and, getTableColumns } from 'drizzle-orm';
 
 export async function createFeedFollow(feedId: string, userId : string) {
     const [ newFeedFollow ] = await db.insert(feedFollows).values( {feedId: feedId, userId: userId }).returning();
     const [feedFollowWithNames] = await db.select({
-        id: feedFollows.id,
-        createdAt: feedFollows.createdAt,
-        updatedAt: feedFollows.updatedAt,
-        userId: feedFollows.userId,
-        feedId: feedFollows.feedId,
+        ...getTableColumns(feedFollows),
         userName: users.name,
         feedName: feeds.name
     }).from(feedFollows).
@@ -27,11 +22,7 @@ export async function createFeedFollow(feedId: string, userId : string) {
 
 export async function getFeedFollowsForUser (userId : string) {
     const result = await db.select({
-        id: feedFollows.id,
-        createdAt: feedFollows.createdAt,
-        updatedAt: feedFollows.updatedAt,
-        userId: feedFollows.userId,
-        feedId: feedFollows.feedId,
+        ...getTableColumns(feedFollows),
         userName: users.name,
         feedName: feeds.name
     }).from(feedFollows).
