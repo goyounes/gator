@@ -1,7 +1,8 @@
 import { Feed, User } from "src/lib/db/schema";
 import { createFeed, getAllFeeds, getNextFeedToFetch, markFeedFetched } from "src/lib/db/queries/feedsQueries";
-import { fetchRSSFeed, printRSSFeedTitles, RSSFeed } from "src/lib/rssService";
+import { fetchRSSFeed, printRSSFeed, printRSSFeedTitles, RSSFeed } from "src/lib/rssService";
 import { createFeedFollow } from "src/lib/db/queries/feedFollowsQueries";
+import { createPost } from "src/lib/db/queries/postsQueries";
 
 
 export async function handlerAgg(_:string, ...args:string[]): Promise<void>{
@@ -38,10 +39,17 @@ async function scrapeFeeds(){
     try {        
         const rssFeed : RSSFeed = await fetchRSSFeed(nextFeed.url)
         console.log(`Successfully fetched RSS feed from ${nextFeed.url}`)
-        // printRSSFeed(rssFeed, 50) //50 charecters max during the printing of long strings
-        printRSSFeedTitles(rssFeed);
+        printRSSFeed(rssFeed, 50) //50 charecters max during the printing of long strings
+        // printRSSFeedTitles(rssFeed);
+
+        await Promise.all(
+            rssFeed.channel.item.map((post) =>
+                createPost(post, nextFeed.id)
+            )
+        );
+        console.log(`${rssFeed.channel.item.length} posts saved to the DB`)
     } catch (err) {
-        throw new Error(`Failed to fetch RSS feed from ${nextFeed.url}\n ${(err instanceof Error) ? err.message : err}`);
+        throw new Error(`Failed to scrap RSS feed from ${nextFeed.url}\n ${(err instanceof Error) ? err.message : err}`);
     }
 
 }
