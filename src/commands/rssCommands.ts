@@ -1,21 +1,49 @@
 import { Feed, User } from "src/lib/db/schema";
-import { createFeed, getAllFeeds } from "src/lib/db/queries/feedsQueries";
-import { fetchRSSFeed, printRSSFeed, RSSFeed } from "src/lib/rssService";
+import { createFeed, getAllFeeds, getNextFeedToFetch, markFeedFetched } from "src/lib/db/queries/feedsQueries";
+import { fetchRSSFeed, printRSSFeedTitles, RSSFeed } from "src/lib/rssService";
 import { createFeedFollow } from "src/lib/db/queries/feedFollowsQueries";
 
 
-export async function handlerAgg(cmdName:string, ...args:string[]): Promise<void>{
-    // if (args.length !== 1 ) {
-    //     throw new Error ("agg function expects <url>")
-    // }
-    const url = args[0] || "https://www.wagslane.dev/index.xml"
-    try {        
-        const feed : RSSFeed = await fetchRSSFeed(url)
-        console.log(`Successfully fetched RSS feed from ${url}`)
-        printRSSFeed(feed, 100)
-    } catch (err) {
-        throw new Error(`Failed to fetch RSS feed from ${url}\n ${(err instanceof Error) ? err.message : err}`);
+export async function handlerAgg(_:string, ...args:string[]): Promise<void>{
+    if (args.length !== 1 ) {
+        throw new Error ("agg function expects <time_between_reqs>")
     }
+
+    const timeBetweenReqs = parseDuration(args[0]) 
+
+    console.log(`Collecting feeds every ${timeBetweenReqs}`)
+
+    await scrapeFeeds()
+
+    const interval = setInterval(async () => {
+        await scrapeFeeds()
+    }, timeBetweenReqs)
+
+    await new Promise<void>((resolve) => {
+        process.on("SIGINT", () => {
+            console.log("Shutting down feed aggregator...");
+            clearInterval(interval);
+            resolve();
+        });
+    });
+}
+
+
+async function scrapeFeeds(){
+
+    const nextFeed = await getNextFeedToFetch()
+    
+    markFeedFetched(nextFeed.id) 
+
+    try {        
+        const rssFeed : RSSFeed = await fetchRSSFeed(nextFeed.url)
+        console.log(`Successfully fetched RSS feed from ${nextFeed.url}`)
+        // printRSSFeed(rssFeed, 50) //50 charecters max during the printing of long strings
+        printRSSFeedTitles(rssFeed);
+    } catch (err) {
+        throw new Error(`Failed to fetch RSS feed from ${nextFeed.url}\n ${(err instanceof Error) ? err.message : err}`);
+    }
+
 }
 
 export async function handlerAddFeed(cmdName:string, user: User, ...args:string[]): Promise<void>{
@@ -65,3 +93,19 @@ export function printFeed(feed: Feed, user: User): void {
     console.log(`* User:          ${user.name}`);
 }
 
+function parseDuration(durationStr: string): number {
+    const regex = /^(\d+)(ms|s|m|h)$/;
+    const match = durationStr.match(regex);
+    
+    if (!match) throw new Error(`invalid duration: ${durationStr}`);
+
+    const amount = Number(match[1]);
+    const unit = match[2];
+    let unitMultiplier = 1000 * 60 //default to 1m 
+    if (unit === "s") unitMultiplier = 1000
+    if (unit === "m") unitMultiplier = 1000 * 60
+    if (unit === "h") unitMultiplier = 1000 * 60 * 60
+    if (unit === "d") unitMultiplier = 1000 * 60 * 60 * 24
+
+    return amount * unitMultiplier
+}
