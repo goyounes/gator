@@ -5,7 +5,8 @@ import { handlerFollow, handlerFollowing, handlerUnfollow } from "./commands/fol
 import { middlewareLoggedIn } from "./middleware"
 async function main() {
     if (process.argv.length <= 2) {
-        throw new Error("Not enough arguments were provided")
+        console.log("Not enough arguments were provided")
+        process.exit(1)
     }
 
     const commandsRegistry: CommandsRegistry = {}
