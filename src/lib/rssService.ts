@@ -28,7 +28,7 @@ export async function fetchRSSFeed(feedURL: string): Promise<RSSFeed> {
     const {title, link, description, item} = feed.channel;
     const validItems = filterValidItems(item);
 
-    console.log(`Fetched RSS feed: ${title} (${link}) - ${description}`);
+    // console.log(`Fetched RSS feed: ${title} (${link}) - ${description}`);
     console.log(`Found ${validItems.length} items in the feed.`);
 
     return {
@@ -47,6 +47,13 @@ export function printRSSFeed(feed: RSSFeed,maxStringLength: number = 0): void {
         colors: true, 
         maxStringLength: maxStringLength || null
     }));
+}
+export function printRSSFeedTitles(feed: RSSFeed): void {
+    console.log("======================\nTopics: ")
+    feed.channel.item.forEach((item) => {
+        console.log(item.title)
+    })
+    console.log("======================");
 }
 
 function validateRSSFeed(feed: unknown): RSSFeed {

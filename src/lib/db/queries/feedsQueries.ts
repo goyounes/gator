@@ -42,6 +42,6 @@ export async function getNextFeedToFetch (): Promise<Feed> {
         .from(feeds)
         .orderBy( sql`${feeds.lastFetchedAt} ASC NULLS FIRST`)
         .limit(10);   
-    console.log(mostObsoleteFeed)
+    // console.log(mostObsoleteFeed)
     return mostObsoleteFeed[0]
 }
